@@ -1,0 +1,217 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>PaseaDog Completo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      background: #f0f0f0;
+    }
+    header {
+      background: #4caf50;
+      color: white;
+      padding: 1rem;
+      text-align: center;
+      font-size: 2rem;
+    }
+    nav {
+      display: flex;
+      justify-content: center;
+      background: #e0e0e0;
+    }
+    nav a {
+      padding: 1rem;
+      cursor: pointer;
+      text-decoration: none;
+      color: #333;
+    }
+    nav a:hover {
+      background: #ccc;
+    }
+    .tab {
+      display: none;
+      padding: 2rem;
+    }
+    .active {
+      display: block;
+    }
+    .price-card {
+      background: white;
+      padding: 1rem;
+      margin: 1rem auto;
+      max-width: 600px;
+      border-radius: 10px;
+      box-shadow: 0 0 5px rgba(0,0,0,0.1);
+    }
+    form {
+      background: white;
+      padding: 2rem;
+      max-width: 600px;
+      margin: auto;
+      border-radius: 10px;
+      box-shadow: 0 0 5px rgba(0,0,0,0.1);
+    }
+    label {
+      display: block;
+      margin-top: 1rem;
+    }
+    input, select, textarea {
+      width: 100%;
+      padding: 0.5rem;
+      margin-top: 0.3rem;
+    }
+    button {
+      margin-top: 1rem;
+      padding: 0.7rem 1.5rem;
+      background: #4caf50;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    #resumenReserva {
+      background: white;
+      padding: 1rem;
+      margin: 2rem auto;
+      max-width: 600px;
+      display: none;
+      border-radius: 10px;
+    }
+  </style>
+</head>
+<body>
+  <header>PaseaDog 🐾</header>
+  <nav>
+    <a data-tab="inicio">Inicio</a>
+    <a data-tab="precio">Precio</a>
+    <a data-tab="info">Información</a>
+    <a data-tab="reserva">Reserva</a>
+  </nav>
+
+  <section id="inicio" class="tab active">
+    <h2>Bienvenido a PaseaDog</h2>
+    <p>Paseos de calidad para tu canino. El más barato de la zona. Limpieza garantizada.</p>
+  </section>
+
+  <section id="precio" class="tab">
+    <div class="price-card">
+      <h3>Paseo individual</h3>
+      <p>1 hora - 7€</p>
+    </div>
+    <div class="price-card" style="background: #fff176;">
+      <h3>Pack semanal</h3>
+      <p>6 paseos de 1 hora - 40€</p>
+    </div>
+    <div class="price-card" style="background: #ff8a65;">
+      <h3>Pack semanal PLUS (más rentable)</h3>
+      <p>6 paseos de 2 horas - 78€</p>
+    </div>
+  </section>
+
+  <section id="info" class="tab">
+    <div class="price-card">
+      <h3>Teléfono:</h3><p>+34 652 625 638</p>
+      <h3>Correo:</h3><p>paseadogcontacto@gmail.com</p>
+      <h3>Ubicación:</h3><p>Rota, Cádiz</p>
+    </div>
+  </section>
+
+  <section id="reserva" class="tab">
+    <form id="reservaForm">
+      <label>Tu nombre</label><input type="text" id="nombre" required>
+      <label>Nombre del perro</label><input type="text" id="perro" required>
+      <label>Teléfono</label><input type="tel" id="telefono" required>
+      <label>Dirección</label><input type="text" id="direccion" required>
+      <label>Fecha del paseo</label><input type="date" id="fecha" required>
+      <label>Hora inicio</label><input type="time" id="horaInicio" required>
+      <label>Hora fin</label><input type="time" id="horaFin" required>
+      <label>Pack</label>
+      <select id="pack" required>
+        <option value="Individual">Paseo individual</option>
+        <option value="Semanal">Pack semanal</option>
+        <option value="Plus">Pack semanal PLUS</option>
+      </select>
+      <label>Número de perros</label><input type="number" id="numPerros" min="1" max="3" required>
+      <label>Observaciones</label><textarea id="observaciones"></textarea>
+      <button type="submit">Reservar</button>
+    </form>
+    <div id="resumenReserva"></div>
+    <canvas id="resumenCanvas" style="display:none;"></canvas>
+  </section>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  emailjs.init("mfbHHxv1LNcMwFnhv");
+
+  // Tabs
+  document.querySelectorAll("nav a").forEach(link => {
+    link.addEventListener("click", () => {
+      document.querySelectorAll(".tab").forEach(tab => tab.classList.remove("active"));
+      const tabId = link.getAttribute("data-tab");
+      document.getElementById(tabId).classList.add("active");
+    });
+  });
+
+  document.getElementById("reservaForm").addEventListener("submit", function(e) {
+    e.preventDefault();
+    const get = id => document.getElementById(id).value;
+
+    const data = {
+      nombre: get("nombre"),
+      perro: get("perro"),
+      telefono: get("telefono"),
+      direccion: get("direccion"),
+      fecha: get("fecha"),
+      hora: get("horaInicio") + " a " + get("horaFin"),
+      pack: get("pack"),
+      numPerros: get("numPerros"),
+      observaciones: get("observaciones")
+    };
+
+    // Mostrar resumen
+    const resumen = document.getElementById("resumenReserva");
+    resumen.innerHTML = `
+      <h3>Resumen de tu reserva</h3>
+      <p><strong>Nombre:</strong> ${data.nombre}</p>
+      <p><strong>Perro:</strong> ${data.perro}</p>
+      <p><strong>Teléfono:</strong> ${data.telefono}</p>
+      <p><strong>Dirección:</strong> ${data.direccion}</p>
+      <p><strong>Fecha:</strong> ${data.fecha}</p>
+      <p><strong>Horario:</strong> ${data.hora}</p>
+      <p><strong>Pack:</strong> ${data.pack}</p>
+      <p><strong>Número de perros:</strong> ${data.numPerros}</p>
+      <p><strong>Observaciones:</strong> ${data.observaciones}</p>
+    `;
+    resumen.style.display = "block";
+
+    setTimeout(() => {
+      html2canvas(resumen).then(canvas => {
+        canvas.id = "resumenCanvas";
+        canvas.style.display = "block";
+        canvas.style.margin = "2rem auto";
+        document.body.appendChild(canvas);
+        const link = document.createElement("a");
+        link.download = "reserva_paseadog.png";
+        link.href = canvas.toDataURL("image/png");
+        link.textContent = "📥 Descargar resumen";
+        link.style.display = "block";
+        link.style.textAlign = "center";
+        link.style.marginBottom = "2rem";
+        document.body.appendChild(link);
+      });
+    }, 300);
+
+    emailjs.send("service_1", "template_o820l2o", data)
+    .then(() => alert("✅ Reserva enviada con éxito"))
+    .catch(err => alert("❌ Error al enviar el correo: " + err.text));
+  });
+});
+</script>
+
+</body>
+</html>
