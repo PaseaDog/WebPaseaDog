@@ -233,6 +233,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const get = id => document.getElementById(id).value;
 
     const data = {
+      
       nombre: get("nombre"),
       perro: get("perro"),
       telefono: get("telefono"),
@@ -258,6 +259,35 @@ document.addEventListener("DOMContentLoaded", () => {
       <p><strong>Número de perros:</strong> ${data.numPerros}</p>
       <p><strong>Observaciones:</strong> ${data.observaciones}</p>
     `;
+    
+    const fechaInicio = new Date(data.fecha);
+    const diaSemana = fechaInicio.getDay(); // 0=domingo
+    const bloqueado = (data.pack === "Pack semanal" || data.pack === "Pack semanal PLUS");
+
+    if (diaSemana === 0) {
+      alert("No se puede reservar en domingo.");
+      return;
+    }
+
+    const bloqueadas = ["2024-07-28", "2024-07-29", "2024-07-30", "2024-07-31", "2024-08-01", "2024-08-02", "2024-08-03", "2024-08-04"];
+    if (bloqueadas.includes(data.fecha)) {
+      alert("No se pueden realizar reservas entre el 28 de julio y el 4 de agosto por motivos personales.");
+      return;
+    }
+
+    if (bloqueado) {
+      const dias = [];
+      for (let i = 0; dias.length < 6; i++) {
+        const d = new Date(fechaInicio);
+        d.setDate(fechaInicio.getDate() + i);
+        if (d.getDay() !== 0) dias.push(d);
+      }
+      const fin = dias[dias.length - 1];
+      const opciones = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+      const finTexto = fin.toLocaleDateString('es-ES', opciones);
+      resumen.innerHTML += `<p><strong>Duración del pack:</strong> desde ${fechaInicio.toLocaleDateString('es-ES')} hasta ${finTexto}</p>`;
+    }
+
     resumen.style.display = "block";
 
     setTimeout(() => {
