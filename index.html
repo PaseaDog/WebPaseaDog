@@ -82,7 +82,72 @@
       display: none;
       border-radius: 10px;
     }
-  </style>
+  
+.price-card.plata {
+  background: linear-gradient(135deg, #f8f8f8, #c0c0c0);
+  box-shadow: 0 0 10px rgba(192, 192, 192, 0.8);
+  color: #333;
+}
+.price-card.oro {
+  background: linear-gradient(135deg, #ffe57f, #ffca28);
+  box-shadow: 0 0 12px rgba(255, 215, 0, 0.9);
+  color: #4e3200;
+  font-weight: bold;
+}
+
+
+.hero-banner {
+  background: linear-gradient(to right, #4CAF50, #81C784);
+  color: white;
+  text-align: center;
+  padding: 3rem 1rem;
+  font-size: 1.8rem;
+  font-weight: bold;
+  border-bottom: 5px solid #388E3C;
+  text-shadow: 1px 1px 3px rgba(0,0,0,0.4);
+}
+.hero-sub {
+  font-size: 1.2rem;
+  margin-top: 1rem;
+  font-weight: normal;
+}
+.cta-button {
+  display: inline-block;
+  margin-top: 1.5rem;
+  background-color: white;
+  color: #4CAF50;
+  padding: 0.7rem 1.2rem;
+  border-radius: 5px;
+  font-weight: bold;
+  text-decoration: none;
+  transition: background 0.3s;
+}
+.cta-button:hover {
+  background-color: #f1f1f1;
+}
+.price-card button {
+  margin-top: 1rem;
+  background: #4CAF50;
+  color: white;
+  border: none;
+  padding: 0.6rem 1rem;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+}
+.price-card.oro button {
+  background: #ffca28;
+  color: #4e3200;
+}
+.price-card.plata button {
+  background: #c0c0c0;
+  color: black;
+}
+.price-card button:hover {
+  opacity: 0.9;
+}
+
+</style>
 </head>
 <body>
   <header>PaseaDog 🐾</header>
@@ -94,6 +159,12 @@
   </nav>
 
   <section id="inicio" class="tab active">
+    <div class="hero-banner">
+      🐕 Paseos de Calidad para tu Canino 🐾
+      <div class="hero-sub">El cuidado, cariño y ejercicio que tu perro merece.</div>
+      <a href="#" class="cta-button" onclick="document.querySelector('[data-tab=precio]').click()">Ver Packs Disponibles</a>
+    </div>
+    
     <h2>Bienvenido a PaseaDog</h2>
     <p>Paseos de calidad para tu canino. El más barato de la zona. Limpieza garantizada.</p>
   </section>
@@ -101,15 +172,15 @@
   <section id="precio" class="tab">
     <div class="price-card">
       <h3>Paseo individual</h3>
-      <p>1 hora - 7€</p>
+      <p>1 hora - 7€</p><button onclick="seleccionarPack('Paseo individual')">Reservar ahora</button>
     </div>
-    <div class="price-card" style="background: #fff176;">
+    <div class="price-card plata">
       <h3>Pack semanal</h3>
-      <p>6 paseos de 1 hora - 40€</p>
+      <p>6 paseos de 1 hora - 40€</p><button onclick="seleccionarPack('Pack semanal')">Buena relación calidad-precio</button>
     </div>
-    <div class="price-card" style="background: #ff8a65;">
+    <div class="price-card oro">
       <h3>Pack semanal PLUS (más rentable)</h3>
-      <p>6 paseos de 2 horas - 78€</p>
+      <p>6 paseos de 2 horas - 78€</p><button onclick="seleccionarPack('Pack semanal PLUS')">⭐ ¡El más elegido!</button>
     </div>
   </section>
 
@@ -213,5 +284,14 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 </script>
 
+
+<script>
+function seleccionarPack(pack) {
+  document.getElementById("pack").value = pack;
+  document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
+  document.getElementById("reserva").classList.add("active");
+  document.getElementById("reserva").scrollIntoView({ behavior: "smooth" });
+}
+</script>
 </body>
 </html>
